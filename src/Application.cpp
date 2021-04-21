@@ -4,15 +4,21 @@
 #include "fmt/core.h"
 #include "fmt/ranges.h"
 #include "yaml-cpp/yaml.h"
+#include "intermediate/IntermediateRepresentation.h"
 
 #define YAML_SET(node, key, type, target)\
 if (node[key]) target = node[key].as<type>()
 
 struct Identity
 {
-	std::string Name;
-	int Age;
-	std::vector<int> Numbers;
+    std::string Name{ "" };
+    int Age{ 0 };
+    std::vector<int> Numbers{};
+
+    inline void PrintSelf()
+    {
+        fmt::print("Name : {0}\nAge : {1}\nNumbers : {2}\n", Name, Age, Numbers);
+    }
 };
 
 namespace YAML {
@@ -41,11 +47,22 @@ namespace YAML {
 
 int main()
 {
-	Identity id;
+    OptionalArgument optArg("name", "desc", "int", "std::stoi", { "-n", "--name" }, "noname");
+    std::vector<Identity> ids;
 	YAML::Node config = YAML::LoadFile("./src/Test.yml");
 
-	YAML_SET(config, "identity", Identity, id);
+	YAML_SET(config, "identities", std::vector<Identity>, ids);
 
-	fmt::print("Name : {0}\nAge : {1}\nNumbers : {2}\n", id.Name, id.Age, id.Numbers);
+    for (auto& id : ids)
+    {
+        id.PrintSelf();
+    }
+
+    fmt::print("------");
+    fmt::print("Name: {0}\nDesc: {1}\nType: {2}\nConv: {3}\nSymbol: {4}\nDef: {5}\n---",
+        optArg.GetName(), optArg.GetDescription(), optArg.GetType(),
+        optArg.GetConversion(), fmt::join(optArg.GetSymbols(), " or "), optArg.GetDefaultValue());
+
+	//fmt::print("Name : {0}\nAge : {1}\nNumbers : {2}\n", id.Name, id.Age, id.Numbers);
 	return 0;
 }
