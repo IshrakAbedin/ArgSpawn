@@ -17,7 +17,6 @@ PositionalArgument::~PositionalArgument()
 PositionalArgument::PositionalArgument(const PositionalArgument& other)
 	: Argument(other), m_Type(other.m_Type), m_Conversion(other.m_Conversion)
 {
-
 }
 
 PositionalArgument::PositionalArgument(PositionalArgument&& other) noexcept

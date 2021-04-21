@@ -45,9 +45,15 @@ namespace YAML {
     };
 }
 
+OptionalArgument GetOptArg()
+{
+    auto a = OptionalArgument("name", "desc", "int", "std::stoi", { "-n", "--name" }, "noname");
+    return a;
+}
+
 int main()
 {
-    OptionalArgument optArg("name", "desc", "int", "std::stoi", { "-n", "--name" }, "noname");
+    auto optArg = GetOptArg();
     std::vector<Identity> ids;
 	YAML::Node config = YAML::LoadFile("./src/Test.yml");
 
