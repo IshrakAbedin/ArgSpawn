@@ -25,6 +25,11 @@ constexpr auto COUNT_OPTIONALARGSOPTIONAL = 1;
 constexpr auto COUNT_FLAGS = 5;
 constexpr auto COUNT_FLAGSOPTIONAL = 2;
 
+static inline bool ArgCountInRange(const long size, const long maxCount, const long optionalCount)
+{
+    return (size >= (maxCount - optionalCount) && size <= maxCount);
+}
+
 namespace YAML {
     template<>
     struct convert<PositionalArgument> {
@@ -38,7 +43,7 @@ namespace YAML {
         }
 
         static bool decode(const Node& node, PositionalArgument& rhs) {
-            if (!node.IsMap() || !(node.size() == COUNT_POSITIONALARGS || node.size() == COUNT_POSITIONALARGS - COUNT_POSITIONALARGSOPTIONAL)) {
+            if (!node.IsMap() || !ArgCountInRange(node.size(), COUNT_POSITIONALARGS, COUNT_POSITIONALARGSOPTIONAL)) {
                 return false;
             }
 
@@ -65,7 +70,7 @@ namespace YAML {
         }
 
         static bool decode(const Node& node, OptionalArgument& rhs) {
-            if (!node.IsMap() || !(node.size() == COUNT_OPTIONALARGS || node.size() == COUNT_OPTIONALARGS - COUNT_OPTIONALARGSOPTIONAL)) {
+            if (!node.IsMap() || !ArgCountInRange(node.size(), COUNT_OPTIONALARGS, COUNT_OPTIONALARGSOPTIONAL)) {
                 return false;
             }
 
@@ -92,7 +97,7 @@ namespace YAML {
         }
 
         static bool decode(const Node& node, Flag& rhs) {
-            if (!node.IsMap() || !(node.size() == COUNT_FLAGS || node.size() == COUNT_FLAGS - COUNT_FLAGSOPTIONAL)) {
+            if (!node.IsMap() || !ArgCountInRange(node.size(), COUNT_FLAGS, COUNT_FLAGSOPTIONAL)) {
                 return false;
             }
 
