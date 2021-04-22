@@ -1,7 +1,7 @@
 #include "IntermediateRepresentation.h"
 
 IntermediateRepresentation::IntermediateRepresentation()
-	: IntermediateRepresentation("unknown program", {}, {}, "", "ArgParser", {}, {}, {})
+	: IntermediateRepresentation("Program", {}, {}, "", "ArgParser", {}, {}, {})
 {
 }
 

@@ -22,7 +22,7 @@ public:
 	OptionalArgument& operator=(OptionalArgument&& other) noexcept;
 
 	inline std::vector<std::string> GetSymbols() const { return m_Symbols; }
-	inline void SetSymbols(const std::vector<std::string> symbols) { m_Symbols = symbols; }
+	//inline void SetSymbols(const std::vector<std::string> symbols) { m_Symbols = symbols; }
 	inline void SetSymbols(std::vector<std::string>&& symbols) { m_Symbols = std::move(symbols); }
 
 	inline std::string GetDefaultValue() const { return m_DefaultValue; }

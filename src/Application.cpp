@@ -1,74 +1,62 @@
-#include <string>
-#include <vector>
-
-#include "fmt/core.h"
 #include "fmt/ranges.h"
-#include "yaml-cpp/yaml.h"
-#include "intermediate/IntermediateRepresentation.h"
 
-#define YAML_SET(node, key, type, target)\
-if (node[key]) target = node[key].as<type>()
+#include "frontend/YamlFrontend.h"
 
-struct Identity
-{
-    std::string Name{ "" };
-    int Age{ 0 };
-    std::vector<int> Numbers{};
-
-    inline void PrintSelf()
-    {
-        fmt::print("Name : {0}\nAge : {1}\nNumbers : {2}\n", Name, Age, Numbers);
-    }
-};
-
-namespace YAML {
-    template<>
-    struct convert<Identity> {
-        static Node encode(const Identity& rhs) {
-            Node node;
-            node["name"] = rhs.Name;
-            node["age"] = rhs.Age;
-            node["numbers"] = rhs.Numbers;
-            return node;
-        }
-
-        static bool decode(const Node& node, Identity& rhs) {
-            if (!node.IsMap() || node.size() != 3) {
-                return false;
-            }
-
-            rhs.Name = node["name"].as<std::string>();
-            rhs.Age = node["age"].as<int>();
-            rhs.Numbers = node["numbers"].as<std::vector<int>>();
-            return true;
-        }
-    };
-}
-
-OptionalArgument GetOptArg()
-{
-    auto a = OptionalArgument("name", "desc", "int", "std::stoi", { "-n", "--name" }, "noname");
-    return a;
-}
+static void PrintIntermediateRepresentation(IntermediateRepresentation& irep);
 
 int main()
 {
-    auto optArg = GetOptArg();
-    std::vector<Identity> ids;
-	YAML::Node config = YAML::LoadFile("./src/Test.yml");
-
-	YAML_SET(config, "identities", std::vector<Identity>, ids);
-
-    for (auto& id : ids)
-    {
-        id.PrintSelf();
-    }
-
-    fmt::print("------");
-    fmt::print("Name: {0}\nDesc: {1}\nType: {2}\nConv: {3}\nSymbol: {4}\nDef: {5}\n---",
-        optArg.GetName(), optArg.GetDescription(), optArg.GetType(),
-        optArg.GetConversion(), fmt::join(optArg.GetSymbols(), " or "), optArg.GetDefaultValue());
-
-	//fmt::print("Name : {0}\nAge : {1}\nNumbers : {2}\n", id.Name, id.Age, id.Numbers);
+	try
+	{
+		IntermediateRepresentation irep{ YamlFrontendParser::ParseYamlFromFile("./yamls/Example1.yaml") };
+		PrintIntermediateRepresentation(irep);
+	}
+	catch (const YAML::Exception& e)
+	{
+		fmt::print("[Error] Failed to Parse\n[Error Msg] {0}\n", e.msg);
+	}
+	catch (const std::exception& e)
+	{
+		fmt::print("[Error] Failed to Parse\n[Error Msg] {0}\n", e.what());
+	}
 	return 0;
+}
+
+static void PrintIntermediateRepresentation(IntermediateRepresentation& irep)
+{
+	fmt::print("Program Description: {0}\n", irep.GetProgramDescription());
+	fmt::print("Angle Includes: {0}\n", fmt::join(irep.GetAngleIncludesRef(), " and "));
+	fmt::print("Quote Includes: {0}\n", fmt::join(irep.GetQuoteIncludesRef(), " and "));
+	fmt::print("Namespace Name: {0}\n", irep.GetNamespaceName());
+	fmt::print("Class Name: {0}\n", irep.GetClassName());
+
+	fmt::print("> Positional Args\n");
+	for (auto& pa : irep.GetPositionalArgumentsRef())
+	{
+		fmt::print("- Name: {0}\n", pa.GetName());
+		fmt::print("  Description: {0}\n", pa.GetDescription());
+		fmt::print("  Type: {0}\n", pa.GetType());
+		fmt::print("  Conversion: {0}\n", pa.GetConversion());
+	}
+
+	fmt::print("> Optional Args\n");
+	for (auto& oa : irep.GetOptionalArgumentsRef())
+	{
+		fmt::print("- Name: {0}\n", oa.GetName());
+		fmt::print("  Description: {0}\n", oa.GetDescription());
+		fmt::print("  Type: {0}\n", oa.GetType());
+		fmt::print("  Conversion: {0}\n", oa.GetConversion());
+		fmt::print("  Symbols: {0}\n", fmt::join(oa.GetSymbols(), " or "));
+		fmt::print("  Default Value: {0}\n", oa.GetDefaultValue());
+	}
+
+	fmt::print("> Flags\n");
+	for (auto& fg : irep.GetFlagsRef())
+	{
+		fmt::print("- Name: {0}\n", fg.GetName());
+		fmt::print("  Description: {0}\n", fg.GetDescription());
+		fmt::print("  Type: {0}\n", fg.GetType());
+		fmt::print("  Conversion: {0}\n", fg.GetConversion());
+		fmt::print("  Symbols: {0}\n", fmt::join(fg.GetSymbols(), " or "));
+	}
 }

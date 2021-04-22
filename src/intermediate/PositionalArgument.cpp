@@ -20,7 +20,7 @@ PositionalArgument::PositionalArgument(const PositionalArgument& other)
 }
 
 PositionalArgument::PositionalArgument(PositionalArgument&& other) noexcept
-	: Argument(std::move(other)), m_Type(std::move(other.m_Type)), m_Conversion(std::move(other.m_Type))
+	: Argument(std::move(other)), m_Type(std::move(other.m_Type)), m_Conversion(std::move(other.m_Conversion))
 {
 }
 

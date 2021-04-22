@@ -1,0 +1,33 @@
+Program Description: A sample program
+Angle Includes: [iostream, string, vector, memory]
+Quote Includes: [intermediate/Flags.h, intermediate/IntermediateRepresentation.h]
+Namespace Name: argspawn
+Class Name: ArgumentParser
+Positional Arguments:
+  - Name: FilePath
+    Description: Path to file
+    Type: std::string
+    # Conversion: 'toString'
+  - Name: Multiplier
+    Description: Integer multiplier
+    Type: int
+    Conversion: std::stoi
+Optional Arguments:
+  - Name: Width
+    Description: Width of output
+    Type: double
+    Conversion: std::stod
+    Symbols: [-w, --width]
+    Default Value: 120.25
+  - Name: Height
+    Description: Height of output
+    Type: double
+    Conversion: std::stod
+    Symbols: [-h, --height]
+    Default Value: 148.5566
+Flags:
+  - Name: IsUniform
+    Description: Force the output to be uniform
+    # Type: bool
+    # Conversion: (bool)std::stoi
+    Symbols: [-u, --uniform]
