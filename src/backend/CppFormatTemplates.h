@@ -1,0 +1,39 @@
+#pragma once
+
+// Templates to be used with fmtlib
+
+constexpr auto TMPLT_PRAGMA_0 = "#pragma once";
+constexpr auto TMPLT_PRIVATE_0 = "private:";
+constexpr auto TMPLT_PUBLIC_0 = "public:";
+constexpr auto TMPLT_NEWLINE_0 = "";
+constexpr auto TMPLT_ANGLE_INCLUDE_1 = "#include <{0}>";
+constexpr auto TMPLT_QUOTE_INCLUDE_1 = "#include \"{0}\"";
+constexpr auto TMPLT_STRUCT_1 = "struct {0} {{";
+constexpr auto TMPLT_CLASS_1 = "class {0} {{";
+constexpr auto TMPLT_ENUMCLASS_1 = "enum class {0} {{";
+constexpr auto TMPLT_DECLARE_DATA_2 = "{0} {1};";
+constexpr auto TMPLT_DECLARE_FUNCTION_3 = "{0} {1}() {2};";
+constexpr auto TMPLT_DECLARE_CTOR_2 = "{0}() {1};";
+constexpr auto TMPLT_DECLARE_PARAMCTOR_2 = "{0}({1});";
+constexpr auto TMPLT_DECLARE_DTOR_2 = "~{0}() {1};";
+
+#define ACC_NAME accumulator
+#define ACCPB(X) ACC_NAME.push_back(X)
+#define ACCPB_FMT(...) ACCPB(fmt::format(__VA_ARGS__))
+#define ACC_PRAGMAONCE ACCPB(TMPLT_PRAGMA_0)
+#define ACC_NEWLINE ACCPB(TMPLT_NEWLINE_0)
+#define ACC_PUBLIC ACCPB(TMPLT_PUBLIC_0)
+#define ACC_PRIVATE ACCPB(TMPLT_PRIVATE_0)
+#define ACC_BRACE_CLOSE ACCPB("}")
+#define ACC_BRACESCOLON_CLOSE ACCPB("};")
+#define ACC_DECLAREVAR(TYPE, NAME) ACCPB_FMT(TMPLT_DECLARE_DATA_2, TYPE, NAME)
+#define ACC_DECLAREFUNC(PREMOD, NAME, POSTMOD) ACCPB_FMT(TMPLT_DECLARE_FUNCTION_3, PREMOD, NAME, POSTMOD)
+#define ACC_STRUCT_BEGIN(X) ACCPB_FMT(TMPLT_STRUCT_1, X)
+#define ACC_STRUCT_END ACC_BRACESCOLON_CLOSE
+#define ACC_CLASS_BEGIN(X) ACCPB_FMT(TMPLT_CLASS_1, X)
+#define ACC_CLASS_END ACC_BRACESCOLON_CLOSE
+#define ACC_DECLARE_CTOR(NAME, POSTMOD) ACCPB_FMT(TMPLT_DECLARE_CTOR_2, NAME, POSTMOD)
+#define ACC_DECLARE_PARAMCTOR(NAME, PARAMS) ACCPB_FMT(TMPLT_DECLARE_PARAMCTOR_2, NAME, PARAMS)
+#define ACC_DECLARE_DTOR(NAME, POSTMOD) ACCPB_FMT(TMPLT_DECLARE_DTOR_2, NAME, POSTMOD)
+#define ACC_ENUMCLASS_BEGIN(X) ACCPB_FMT(TMPLT_ENUMCLASS_1, X)
+#define ACC_ENUMCLASS_END ACC_BRACESCOLON_CLOSE

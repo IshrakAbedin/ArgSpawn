@@ -1,6 +1,8 @@
 #include "fmt/ranges.h"
+#include <iostream>
 
 #include "frontend/YamlFrontend.h"
+#include "backend/CppBackend.h"
 
 static void PrintIntermediateRepresentation(IntermediateRepresentation& irep);
 
@@ -9,7 +11,10 @@ int main()
 	try
 	{
 		IntermediateRepresentation irep{ YamlFrontendParser::ParseYamlFromFile("./yamls/Example1.yaml") };
-		PrintIntermediateRepresentation(irep);
+		auto [header, body] = CppGenerator::GenerateCppHeaderAndBody(irep);
+		//fmt::print(header);
+		std::cout << header;
+		//PrintIntermediateRepresentation(irep);
 	}
 	catch (const YAML::Exception& e)
 	{
