@@ -8,9 +8,10 @@ constexpr auto TMPLT_PUBLIC_0 = "public:";
 constexpr auto TMPLT_NEWLINE_0 = "";
 constexpr auto TMPLT_ANGLE_INCLUDE_1 = "#include <{0}>";
 constexpr auto TMPLT_QUOTE_INCLUDE_1 = "#include \"{0}\"";
-constexpr auto TMPLT_STRUCT_1 = "struct {0} {{";
+constexpr auto TMPLT_NAMESPACE_1 = "namespace {0}{{";
+constexpr auto TMPLT_STRUCT_1 = "struct {0}{{";
 constexpr auto TMPLT_CLASS_1 = "class {0} {{";
-constexpr auto TMPLT_ENUMCLASS_1 = "enum class {0} {{";
+constexpr auto TMPLT_ENUMCLASS_1 = "enum class {0}{{";
 constexpr auto TMPLT_DECLARE_DATA_2 = "{0} {1};";
 constexpr auto TMPLT_DECLARE_FUNCTION_3 = "{0} {1}() {2};";
 constexpr auto TMPLT_DECLARE_CTOR_2 = "{0}() {1};";
@@ -26,6 +27,8 @@ constexpr auto TMPLT_DECLARE_DTOR_2 = "~{0}() {1};";
 #define ACC_PRIVATE ACCPB(TMPLT_PRIVATE_0)
 #define ACC_BRACE_CLOSE ACCPB("}")
 #define ACC_BRACESCOLON_CLOSE ACCPB("};")
+#define ACC_NAMESPACE_BEGIN(X) ACCPB_FMT(TMPLT_NAMESPACE_1, X)
+#define ACC_NAMESPACE_END ACC_BRACE_CLOSE
 #define ACC_DECLAREVAR(TYPE, NAME) ACCPB_FMT(TMPLT_DECLARE_DATA_2, TYPE, NAME)
 #define ACC_DECLAREFUNC(PREMOD, NAME, POSTMOD) ACCPB_FMT(TMPLT_DECLARE_FUNCTION_3, PREMOD, NAME, POSTMOD)
 #define ACC_STRUCT_BEGIN(X) ACCPB_FMT(TMPLT_STRUCT_1, X)

@@ -15,20 +15,25 @@ std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 {
 	std::vector<std::string> ACC_NAME;
 
-	ACCPB(TMPLT_PRAGMA_0); // push pragma once
-	ACC_NEWLINE; // newline
+	ACCPB(TMPLT_PRAGMA_0); // Push pragma once
+	ACC_NEWLINE; // Push newline
 
-	for (auto& angleInclude : irep.GetAngleIncludesRef()) // push angle includes
+	// Push angle includes
+	for (auto& angleInclude : irep.GetAngleIncludesRef())
 	{
 		ACCPB_FMT(TMPLT_ANGLE_INCLUDE_1, angleInclude);
 	}
 	ACC_NEWLINE;
 
-	for (auto& quoteInclude : irep.GetQuoteIncludesRef()) // push quote includes
+	// Push quote includes
+	for (auto& quoteInclude : irep.GetQuoteIncludesRef())
 	{
 		ACCPB_FMT(TMPLT_QUOTE_INCLUDE_1, quoteInclude);
 	}
 	ACC_NEWLINE;
+
+	// Push namespace if it is named
+	if (irep.GetNamespaceName() != "") ACC_NAMESPACE_BEGIN(irep.GetNamespaceName());
 
 	// Prepare the return struct
 	ACC_STRUCT_BEGIN(RETURN_STRUCT_TNAME);
@@ -54,7 +59,7 @@ std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 
 	// Prepare enum for state switching
 	ACC_ENUMCLASS_BEGIN(STATE_ENUMCLASS_TNAME);
-	irep.GetOptionalArgumentsRef().empty() ? ACCPB("Default = 0,") : ACCPB("Default = 0");
+	irep.GetOptionalArgumentsRef().empty() ? ACCPB("Default = 0") : ACCPB("Default = 0,");
 	if (!irep.GetOptionalArgumentsRef().empty())
 	{
 		std::vector<std::string> optArgNames;
@@ -85,7 +90,8 @@ std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 	ACC_DECLAREFUNC("void", HELPTEXT_FUNC_NAME, "const");
 
 	ACC_CLASS_END;
-	ACC_NEWLINE;
+
+	if (irep.GetNamespaceName() != "") ACC_NAMESPACE_END;
 
 	return fmt::format("{0}", fmt::join(accumulator, "\n"));
 }
