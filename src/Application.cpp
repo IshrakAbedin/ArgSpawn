@@ -12,7 +12,7 @@ int main()
 	{
 		IntermediateRepresentation irep{ YamlFrontendParser::ParseYamlFromFile("./yamls/Example1.yaml") };
 		auto [header, body] = CppGenerator::GenerateCppHeaderAndBody(irep);
-		std::cout << header; // fmt will cause parsing error with the curly braces
+		std::cout << body; // fmt will cause parsing error with the curly braces
 		//PrintIntermediateRepresentation(irep);
 	}
 	catch (const YAML::Exception& e)
