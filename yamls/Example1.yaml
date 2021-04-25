@@ -7,7 +7,7 @@ Positional Arguments:
   - Name: FilePath
     Description: Path to file
     Type: std::string
-    # Conversion: 'toString'
+    # Conversion: '' # Not required
   - Name: Multiplier
     Description: Integer multiplier
     Type: int
@@ -23,7 +23,7 @@ Optional Arguments:
     Description: Height of output
     Type: double
     Conversion: std::stod
-    Symbols: [-h, --height]
+    Symbols: [-ht, --height]
     Default Value: 148.5566
 Flags:
   - Name: IsUniform
