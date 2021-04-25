@@ -165,7 +165,9 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	ACC_NEWLINE;
 
 	// Initial check to match argument count
-	ACC_IF(fmt::format("m_Argc < {0} + 1 || m_Argc > {1} + 1", VAR_TARGET_COUNT_NAME, VAR_MAX_ARG_NAME));
+	ACC_IF(fmt::format("m_Argc < {0} + 1", VAR_TARGET_COUNT_NAME));
+	ACC_COUTLN(POSITIONAL_ARG_UNDERFLOW_MSG);
+	ACC_COUT_NEWLINE;
 	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
 	ACC_IF_END;
 	ACC_NEWLINE;
