@@ -2,7 +2,7 @@
 
 #include "fmt/ranges.h"
 
-#include "CppFormatTemplates.h" // Highly dependent on the macors and contexprs
+#include "CppFormatTemplates.h" // Highly dependent on the macros and constexprs
 
 constexpr auto RETURN_STRUCT_TNAME = "Arguments";
 constexpr auto STATE_ENUMCLASS_TNAME = "States";
@@ -18,6 +18,10 @@ constexpr auto VAR_EACH_ARG_NAME = "arg";
 constexpr auto HELP_TEXT_MSG = "Print help message and exit";
 constexpr auto POSITIONAL_ARG_OVERFLOW_MSG = "[!ERROR] Provided more positional arguments than allowed";
 constexpr auto POSITIONAL_ARG_UNDERFLOW_MSG = "[!ERROR] Provided less positional arguments than required";
+
+constexpr auto UTILFUNC_STRING_HASH_NAME = "StringToInt";
+constexpr auto UTILFUNC_STRING_HASH = "static constexpr unsigned int StringToInt(const char* str, int h = 0)\n"
+	"{\n return !str[h] ? 5381 : (StringToInt(str, h + 1) * 33) ^ str[h];\n}";
 
 const std::vector<std::string> VEC_HELP_SYMBOLS = { "-h", "--help" };
 
@@ -117,11 +121,15 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	
 	// Add iostream for external library independent printing and string for string type
 	ACC_AHEADER_INCLUDE("iostream");
-	ACC_AHEADER_INCLUDE("string");
+	// ACC_AHEADER_INCLUDE("string");
 	ACC_NEWLINE;
 
 	// Push namespace if it is named
 	if (irep.GetNamespaceName() != "") ACC_NAMESPACE_BEGIN(irep.GetNamespaceName());
+
+	// Push the utility constexpr string hashing function
+	ACCPB(UTILFUNC_STRING_HASH);
+	ACC_NEWLINE;
 
 	/*-------------------------- PARAMETERIZED CONSTRUCTOR BEGINS --------------------------*/
 	ACC_DEFINE_PARAMCTOR(irep.GetClassName(), "int argc, char** argv");
@@ -164,15 +172,15 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 
 	// Main loop through each of the arguments
 	ACC_FOR("int i = 0", "i < m_Argc", "i++");
-	ACC_DECDEFINE_VAR("std::string", VAR_EACH_ARG_NAME, "m_Argv[i]");
+	ACC_DECDEFINE_VAR("auto", VAR_EACH_ARG_NAME, "m_Argv[i]");
 	ACC_NEWLINE;
 
 	/* Level 0 Indent Switch Starts*/
-	ACC_SWITCH(VAR_EACH_ARG_NAME);
+	ACC_SWITCH(UTIL_FUNC_CALL(UTILFUNC_STRING_HASH_NAME, VAR_EACH_ARG_NAME));
 
 	for (auto& helpText : VEC_HELP_SYMBOLS)
 	{
-		ACC_CASE(UTIL_STR(helpText));
+		ACC_CASE(UTIL_FUNC_CALL(UTILFUNC_STRING_HASH_NAME, UTIL_STR(helpText)));
 	}
 	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
 	ACC_BREAK;
@@ -180,21 +188,21 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	{
 		for (auto& symbol : arg.GetSymbols())
 		{
-			ACC_CASE(UTIL_STR(symbol));
+			ACC_CASE(UTIL_FUNC_CALL(UTILFUNC_STRING_HASH_NAME, UTIL_STR(symbol)));
 		}
-		ACC_DEFINE_VAR(VAR_EACH_ARG_NAME, UTIL_STATIC_MEMBER(STATE_ENUMCLASS_NAME, arg.GetName()));
+		ACC_DEFINE_VAR(STATE_ENUMCLASS_NAME, UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, arg.GetName()));
 		ACC_BREAK;
 	}
 	for (auto& arg : irep.GetFlagsRef())
 	{
 		for (auto& symbol : arg.GetSymbols())
 		{
-			ACC_CASE(UTIL_STR(symbol));
+			ACC_CASE(UTIL_FUNC_CALL(UTILFUNC_STRING_HASH_NAME, UTIL_STR(symbol)));
 		}
 		ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()), "true");
 		ACC_BREAK;
 	}
-	ACC_CASE("default");
+	ACC_CASE_DEFAULT;
 	/* Level 1 Indent Switch Starts */
 	ACC_SWITCH(STATE_ENUMCLASS_NAME);
 	
@@ -218,7 +226,7 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		ACC_BREAK;
 		counter++;
 	}
-	ACC_CASE("default");
+	ACC_CASE_DEFAULT;
 	ACC_COUTLN(POSITIONAL_ARG_OVERFLOW_MSG);
 	ACC_COUT_NEWLINE;
 	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
@@ -243,7 +251,7 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		}
 		ACC_BREAK;
 	}
-	ACC_CASE("default");
+	ACC_CASE_DEFAULT;
 	// A execution should never reach here
 	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
 	ACC_BREAK;
