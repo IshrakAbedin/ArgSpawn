@@ -30,10 +30,15 @@ constexpr auto TMPLT_FOR_3 = "for ({0}; {1}; {2}) {{";
 constexpr auto TMPLT_SWITCH_1 = "switch ({0}) {{";
 constexpr auto TMPLT_CASE_1 = "case {0}:";
 constexpr auto TMPLT_BREAK_0 = "break;";
+constexpr auto TMPLT_INCREMENT_1 = "{0}++;";
+constexpr auto TMPLT_EXIT_1 = "exit({0})";
+constexpr auto TMPLT_ELSE_0 = "else {";
+constexpr auto TMPLT_RETURN_1 = "return {0};";
 
 constexpr auto UTMPLT_STR_1 = "\"{0}\"";
 constexpr auto UTMPLT_STATIC_MEMBER_2 = "{0}::{1}";
 constexpr auto UTMPLT_OBJECT_MEMBER_2 = "{0}.{1}";
+constexpr auto UTMPLT_FUNC_CALL_2 = "{0}({1})";
 
 #define ACC_NAME accumulator
 #define ACCPB(X) ACC_NAME.push_back(X)
@@ -76,7 +81,13 @@ constexpr auto UTMPLT_OBJECT_MEMBER_2 = "{0}.{1}";
 #define ACC_SWITCH_END ACC_BRACE_CLOSE
 #define ACC_CASE(X) ACCPB_FMT(TMPLT_CASE_1, X)
 #define ACC_BREAK ACCPB(TMPLT_BREAK_0)
+#define ACC_INCREMENT_VAR(X) ACCPB_FMT(TMPLT_INCREMENT_1, X)
+#define ACC_EXIT(CODE) ACCPB_FMT(TMPLT_EXIT_1, CODE)
+#define ACC_ELSE ACCPB(TMPLT_ELSE_0)
+#define ACC_ELSE_END ACC_BRACE_CLOSE
+#define ACC_RETURN(X) ACCPB_FMT(TMPLT_RETURN_1, X)
 
 #define UTIL_STR(X) fmt::format(UTMPLT_STR_1, X)
 #define UTIL_STATIC_MEMBER(OWNER, MEMBER) fmt::format(UTMPLT_STATIC_MEMBER_2, OWNER, MEMBER)
 #define UTIL_OBJECT_MEMBER(OWNER, MEMBER) fmt::format(UTMPLT_OBJECT_MEMBER_2, OWNER, MEMBER)
+#define UTIL_FUNC_CALL(FUNC, PARAMS) fmt::format(UTMPLT_FUNC_CALL_2, FUNC, PARAMS)

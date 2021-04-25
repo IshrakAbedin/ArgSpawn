@@ -15,6 +15,9 @@ constexpr auto VAR_PARSE_COUNT_NAME = "parseCount";
 constexpr auto VAR_TARGET_COUNT_NAME = "targetCount";
 constexpr auto VAR_MAX_ARG_NAME = "maxArgCount";
 constexpr auto VAR_EACH_ARG_NAME = "arg";
+constexpr auto HELP_TEXT_MSG = "Print help message and exit";
+constexpr auto POSITIONAL_ARG_OVERFLOW_MSG = "[!ERROR] Provided more positional arguments than allowed";
+constexpr auto POSITIONAL_ARG_UNDERFLOW_MSG = "[!ERROR] Provided less positional arguments than required";
 
 const std::vector<std::string> VEC_HELP_SYMBOLS = { "-h", "--help" };
 
@@ -106,12 +109,13 @@ std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 {
 	std::vector<std::string> ACC_NAME;
+	int counter;
 
 	// Add class header inclusion
 	ACC_QHEADER_INCLUDE(fmt::format("{0}.h", irep.GetClassName()));
 	ACC_NEWLINE;
 	
-	// Add iostream for external library independent printing and string for string manipulation
+	// Add iostream for external library independent printing and string for string type
 	ACC_AHEADER_INCLUDE("iostream");
 	ACC_AHEADER_INCLUDE("string");
 	ACC_NEWLINE;
@@ -119,7 +123,7 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	// Push namespace if it is named
 	if (irep.GetNamespaceName() != "") ACC_NAMESPACE_BEGIN(irep.GetNamespaceName());
 
-	// Push ParamCtor
+	/*-------------------------- PARAMETERIZED CONSTRUCTOR BEGINS --------------------------*/
 	ACC_DEFINE_PARAMCTOR(irep.GetClassName(), "int argc, char** argv");
 	ACCPB_FMT("{0} = {1}::{2};", STATE_ENUMCLASS_NAME, STATE_ENUMCLASS_TNAME, STATE_ENUM_DEFAULT); // Set state to default
 	if (!irep.GetOptionalArgumentsRef().empty()) // Initialize optional variable defaults
@@ -139,29 +143,31 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	ACCPB("m_Argc = argc;"); // Set argc value
 	ACCPB("m_Argv = argv;"); // Set argv value
 	ACC_FUNC_END;
+	/*-------------------------- PARAMETERIZED CONSTRUCTOR ENDS --------------------------*/
 	ACC_NEWLINE;
 
-	// Parse Argument function
+	/*-------------------------- PARSE ARGUMENT FUNCTION BEGINS --------------------------*/
 	ACC_DEFINE_CLASSFUNC(RETURN_STRUCT_TNAME, irep.GetClassName(), PARSING_FUNC_NAME, "", "");
 	
+	// Control variables for argument counting
 	ACC_DECDEFINE_VAR("int", VAR_PARSE_COUNT_NAME, 0);
 	ACC_DECDEFINE_VAR("int", VAR_TARGET_COUNT_NAME, irep.GetPositionalArgumentsRef().size());
 	ACC_DECDEFINE_VAR("int", VAR_MAX_ARG_NAME, irep.GetPositionalArgumentsRef().size() +
 		irep.GetOptionalArgumentsRef().size() + irep.GetFlagsRef().size());
 	ACC_NEWLINE;
 
-
-
-
-
+	// Initial check to match argument count
 	ACC_IF(fmt::format("m_Argc < {0} || m_Argc > {1}", VAR_TARGET_COUNT_NAME, VAR_MAX_ARG_NAME));
 	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
 	ACC_IF_END;
+	ACC_NEWLINE;
 
+	// Main loop through each of the arguments
 	ACC_FOR("int i = 0", "i < m_Argc", "i++");
 	ACC_DECDEFINE_VAR("std::string", VAR_EACH_ARG_NAME, "m_Argv[i]");
 	ACC_NEWLINE;
 
+	/* Level 0 Indent Switch Starts*/
 	ACC_SWITCH(VAR_EACH_ARG_NAME);
 
 	for (auto& helpText : VEC_HELP_SYMBOLS)
@@ -189,57 +195,121 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		ACC_BREAK;
 	}
 	ACC_CASE("default");
-	ACC_NEWLINE;
+	/* Level 1 Indent Switch Starts */
+	ACC_SWITCH(STATE_ENUMCLASS_NAME);
+	
+	ACC_CASE(UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, STATE_ENUM_DEFAULT));
+	/* Level 2 Indent Switch Starts */
+
+	ACC_SWITCH(VAR_PARSE_COUNT_NAME);
+	counter = 0;
+	for (auto& arg : irep.GetPositionalArgumentsRef())
+	{
+		ACC_CASE(counter);
+		if (arg.GetConversion() != "")
+		{
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()),
+				UTIL_FUNC_CALL(arg.GetConversion(), VAR_EACH_ARG_NAME));
+		}
+		else
+		{
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()), VAR_EACH_ARG_NAME);
+		}
+		ACC_BREAK;
+		counter++;
+	}
+	ACC_CASE("default");
+	ACC_COUTLN(POSITIONAL_ARG_OVERFLOW_MSG);
+	ACC_COUT_NEWLINE;
+	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
 	ACC_BREAK;
 
 	ACC_SWITCH_END;
+	/* Level 2 Indent Switch Ends */
+	ACC_INCREMENT_VAR(VAR_PARSE_COUNT_NAME);
+	ACC_BREAK;
+
+	for (auto& arg : irep.GetOptionalArgumentsRef())
+	{
+		ACC_CASE(UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, arg.GetName()));
+		if (arg.GetConversion() != "")
+		{
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()),
+				UTIL_FUNC_CALL(arg.GetConversion(), VAR_EACH_ARG_NAME));
+		}
+		else
+		{
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()), VAR_EACH_ARG_NAME);
+		}
+		ACC_BREAK;
+	}
+	ACC_CASE("default");
+	// A execution should never reach here
+	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
+	ACC_BREAK;
+	ACC_SWITCH_END;
+	/* Leve1 Indent Switch Ends */
+	ACC_BREAK;
+
+	ACC_SWITCH_END;
+	/* Level 0 Indent Switch Ends */
 	ACC_FOR_END;
 
+	// Exit if argument count underflows
+	ACC_IF(fmt::format("{0} != {1}", VAR_PARSE_COUNT_NAME, VAR_TARGET_COUNT_NAME));
+	ACC_COUTLN(POSITIONAL_ARG_UNDERFLOW_MSG);
+	ACC_COUT_NEWLINE;
+	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
+	ACC_IF_END;
+	ACC_NEWLINE;
+	ACC_RETURN(RETURN_STRUCT_NAME);
+
 	ACC_FUNC_END;
+	/*-------------------------- PARSE ARGUMENT FUNCTION ENDS --------------------------*/
 	ACC_NEWLINE;
 
-
-
-
-
-
-
-
-
-
-
-	// Help Text function
+	/*-------------------------- HELP TEXT FUNCTION BEGINS --------------------------*/
 	ACC_DEFINE_CLASSFUNC("void", irep.GetClassName(), HELPTEXT_FUNC_NAME, "", "const");
 	ACC_COUTLN(irep.GetProgramDescription());
 	ACC_COUT_NEWLINE;
+
+	auto desc = fmt::format("[{0}] : {1}", fmt::join(VEC_HELP_SYMBOLS, ", "), HELP_TEXT_MSG);
+	ACC_COUTLN(desc);
+	ACC_COUT_NEWLINE;
+
 	if (!irep.GetPositionalArgumentsRef().empty())
 	{
 		ACC_COUTLN("POSITIONAL ARGUMENTS\\n--------------------");
 		for (auto& arg : irep.GetPositionalArgumentsRef())
 		{
-			auto desc = fmt::format("[{0}] > {1}", arg.GetName(), arg.GetDescription());
+			auto desc = fmt::format("[{0}] : {1}", arg.GetName(), arg.GetDescription());
 			ACC_COUTLN(desc);
 		}
 	}
+	ACC_COUT_NEWLINE;
 	if (!irep.GetOptionalArgumentsRef().empty())
 	{
 		ACC_COUTLN("OPTIONAL ARGUMENTS\\n--------------------");
 		for (auto& arg : irep.GetOptionalArgumentsRef())
 		{
-			auto desc = fmt::format("[{0}] > {1}", fmt::join(arg.GetSymbols(), ", "), arg.GetDescription());
+			auto desc = fmt::format("[{0}] : {1}", fmt::join(arg.GetSymbols(), ", "), arg.GetDescription());
 			ACC_COUTLN(desc);
 		}
 	}
+	ACC_COUT_NEWLINE;
 	if (!irep.GetFlagsRef().empty())
 	{
 		ACC_COUTLN("Flags\\n-----");
 		for (auto& arg : irep.GetFlagsRef())
 		{
-			auto desc = fmt::format("[{0}] > {1}", fmt::join(arg.GetSymbols(), ", "), arg.GetDescription());
+			auto desc = fmt::format("[{0}] : {1}", fmt::join(arg.GetSymbols(), ", "), arg.GetDescription());
 			ACC_COUTLN(desc);
 		}
 	}
+	ACC_COUT_NEWLINE;
+	ACC_EXIT(0);
 	ACC_FUNC_END;
+	/*-------------------------- HELP TEXT FUNCTION ENDS --------------------------*/
 
 	if (irep.GetNamespaceName() != "") ACC_NAMESPACE_END;
 
