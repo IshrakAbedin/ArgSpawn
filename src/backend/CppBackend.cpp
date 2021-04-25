@@ -11,6 +11,12 @@ constexpr auto STATE_ENUMCLASS_NAME = "states";
 constexpr auto PARSING_FUNC_NAME = "ParseArguments";
 constexpr auto HELPTEXT_FUNC_NAME = "PrintHelpTextAndExit";
 constexpr auto STATE_ENUM_DEFAULT = "Default";
+constexpr auto VAR_PARSE_COUNT_NAME = "parseCount";
+constexpr auto VAR_TARGET_COUNT_NAME = "targetCount";
+constexpr auto VAR_MAX_ARG_NAME = "maxArgCount";
+constexpr auto VAR_EACH_ARG_NAME = "arg";
+
+const std::vector<std::string> VEC_HELP_SYMBOLS = { "-h", "--help" };
 
 std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 {
@@ -105,8 +111,9 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	ACC_QHEADER_INCLUDE(fmt::format("{0}.h", irep.GetClassName()));
 	ACC_NEWLINE;
 	
-	// Add iostream for external library independent printing
+	// Add iostream for external library independent printing and string for string manipulation
 	ACC_AHEADER_INCLUDE("iostream");
+	ACC_AHEADER_INCLUDE("string");
 	ACC_NEWLINE;
 
 	// Push namespace if it is named
@@ -134,10 +141,72 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	ACC_FUNC_END;
 	ACC_NEWLINE;
 
+	// Parse Argument function
 	ACC_DEFINE_CLASSFUNC(RETURN_STRUCT_TNAME, irep.GetClassName(), PARSING_FUNC_NAME, "", "");
-	// TODO: Actual parser function
+	
+	ACC_DECDEFINE_VAR("int", VAR_PARSE_COUNT_NAME, 0);
+	ACC_DECDEFINE_VAR("int", VAR_TARGET_COUNT_NAME, irep.GetPositionalArgumentsRef().size());
+	ACC_DECDEFINE_VAR("int", VAR_MAX_ARG_NAME, irep.GetPositionalArgumentsRef().size() +
+		irep.GetOptionalArgumentsRef().size() + irep.GetFlagsRef().size());
+	ACC_NEWLINE;
+
+
+
+
+
+	ACC_IF(fmt::format("m_Argc < {0} || m_Argc > {1}", VAR_TARGET_COUNT_NAME, VAR_MAX_ARG_NAME));
+	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
+	ACC_IF_END;
+
+	ACC_FOR("int i = 0", "i < m_Argc", "i++");
+	ACC_DECDEFINE_VAR("std::string", VAR_EACH_ARG_NAME, "m_Argv[i]");
+	ACC_NEWLINE;
+
+	ACC_SWITCH(VAR_EACH_ARG_NAME);
+
+	for (auto& helpText : VEC_HELP_SYMBOLS)
+	{
+		ACC_CASE(UTIL_STR(helpText));
+	}
+	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
+	ACC_BREAK;
+	for (auto& arg : irep.GetOptionalArgumentsRef())
+	{
+		for (auto& symbol : arg.GetSymbols())
+		{
+			ACC_CASE(UTIL_STR(symbol));
+		}
+		ACC_DEFINE_VAR(VAR_EACH_ARG_NAME, UTIL_STATIC_MEMBER(STATE_ENUMCLASS_NAME, arg.GetName()));
+		ACC_BREAK;
+	}
+	for (auto& arg : irep.GetFlagsRef())
+	{
+		for (auto& symbol : arg.GetSymbols())
+		{
+			ACC_CASE(UTIL_STR(symbol));
+		}
+		ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()), "true");
+		ACC_BREAK;
+	}
+	ACC_CASE("default");
+	ACC_NEWLINE;
+	ACC_BREAK;
+
+	ACC_SWITCH_END;
+	ACC_FOR_END;
+
 	ACC_FUNC_END;
 	ACC_NEWLINE;
+
+
+
+
+
+
+
+
+
+
 
 	// Help Text function
 	ACC_DEFINE_CLASSFUNC("void", irep.GetClassName(), HELPTEXT_FUNC_NAME, "", "const");

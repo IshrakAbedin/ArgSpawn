@@ -15,13 +15,25 @@ constexpr auto TMPLT_NAMESPACE_1 = "namespace {0}{{";
 constexpr auto TMPLT_STRUCT_1 = "struct {0}{{";
 constexpr auto TMPLT_CLASS_1 = "class {0} {{";
 constexpr auto TMPLT_ENUMCLASS_1 = "enum class {0}{{";
-constexpr auto TMPLT_DECLARE_DATA_2 = "{0} {1};";
+constexpr auto TMPLT_DECLARE_VAR_2 = "{0} {1};";
+constexpr auto TMPLT_DEFINE_VAR_2 = "{0} = {1};";
+constexpr auto TMPLT_DECDEFINE_VAR_3 = "{0} {1} = {2};";
 constexpr auto TMPLT_DECLARE_FUNCTION_4 = "{0} {1}({2}) {3};";
 constexpr auto TMPLT_DECLARE_CTOR_2 = "{0}() {1};";
 constexpr auto TMPLT_DECLARE_PARAMCTOR_2 = "{0}({1});";
 constexpr auto TMPLT_DECLARE_DTOR_2 = "~{0}() {1};";
 constexpr auto TMPLT_DEFINE_PARAMCTOR_2 = "{0}::{0}({1}) {{";
 constexpr auto TMPLT_DEFINE_CLASSFUNC_5 = "{0} {1}::{2}({3}) {4}{{";
+constexpr auto TMPLT_IF_1 = "if ({0}) {{";
+constexpr auto TMPLT_FUNC_CALL_2 = "{0}({1});";
+constexpr auto TMPLT_FOR_3 = "for ({0}; {1}; {2}) {{";
+constexpr auto TMPLT_SWITCH_1 = "switch ({0}) {{";
+constexpr auto TMPLT_CASE_1 = "case {0}:";
+constexpr auto TMPLT_BREAK_0 = "break;";
+
+constexpr auto UTMPLT_STR_1 = "\"{0}\"";
+constexpr auto UTMPLT_STATIC_MEMBER_2 = "{0}::{1}";
+constexpr auto UTMPLT_OBJECT_MEMBER_2 = "{0}.{1}";
 
 #define ACC_NAME accumulator
 #define ACCPB(X) ACC_NAME.push_back(X)
@@ -39,7 +51,9 @@ constexpr auto TMPLT_DEFINE_CLASSFUNC_5 = "{0} {1}::{2}({3}) {4}{{";
 #define ACC_BRACESCOLON_CLOSE ACCPB("};")
 #define ACC_NAMESPACE_BEGIN(X) ACCPB_FMT(TMPLT_NAMESPACE_1, X)
 #define ACC_NAMESPACE_END ACC_BRACE_CLOSE
-#define ACC_DECLARE_VAR(TYPE, NAME) ACCPB_FMT(TMPLT_DECLARE_DATA_2, TYPE, NAME)
+#define ACC_DECLARE_VAR(TYPE, NAME) ACCPB_FMT(TMPLT_DECLARE_VAR_2, TYPE, NAME)
+#define ACC_DEFINE_VAR(NAME, VALUE) ACCPB_FMT(TMPLT_DEFINE_VAR_2, NAME, VALUE)
+#define ACC_DECDEFINE_VAR(TYPE, NAME, VALUE) ACCPB_FMT(TMPLT_DECDEFINE_VAR_3, TYPE, NAME, VALUE)
 #define ACC_DECLARE_FUNC(PREMOD, NAME, PARAMS, POSTMOD) ACCPB_FMT(TMPLT_DECLARE_FUNCTION_4, PREMOD, NAME, PARAMS, POSTMOD)
 #define ACC_STRUCT_BEGIN(X) ACCPB_FMT(TMPLT_STRUCT_1, X)
 #define ACC_STRUCT_END ACC_BRACESCOLON_CLOSE
@@ -53,3 +67,16 @@ constexpr auto TMPLT_DEFINE_CLASSFUNC_5 = "{0} {1}::{2}({3}) {4}{{";
 #define ACC_DEFINE_PARAMCTOR(CLASS, PARAMS) ACCPB_FMT(TMPLT_DEFINE_PARAMCTOR_2, CLASS, PARAMS)
 #define ACC_DEFINE_CLASSFUNC(PREMOD, CLASS, NAME, PARAMS, POSTMOD) ACCPB_FMT(TMPLT_DEFINE_CLASSFUNC_5, PREMOD, CLASS, NAME, PARAMS, POSTMOD)
 #define ACC_FUNC_END ACC_BRACE_CLOSE
+#define ACC_IF(X) ACCPB_FMT(TMPLT_IF_1, X)
+#define ACC_IF_END ACC_BRACE_CLOSE
+#define ACC_FUNC_CALL(NAME, PARAMS) ACCPB_FMT(TMPLT_FUNC_CALL_2, NAME, PARAMS)
+#define ACC_FOR(INIT, CHECK, INC) ACCPB_FMT(TMPLT_FOR_3, INIT, CHECK, INC)
+#define ACC_FOR_END ACC_BRACE_CLOSE
+#define ACC_SWITCH(X) ACCPB_FMT(TMPLT_SWITCH_1, X)
+#define ACC_SWITCH_END ACC_BRACE_CLOSE
+#define ACC_CASE(X) ACCPB_FMT(TMPLT_CASE_1, X)
+#define ACC_BREAK ACCPB(TMPLT_BREAK_0)
+
+#define UTIL_STR(X) fmt::format(UTMPLT_STR_1, X)
+#define UTIL_STATIC_MEMBER(OWNER, MEMBER) fmt::format(UTMPLT_STATIC_MEMBER_2, OWNER, MEMBER)
+#define UTIL_OBJECT_MEMBER(OWNER, MEMBER) fmt::format(UTMPLT_OBJECT_MEMBER_2, OWNER, MEMBER)
