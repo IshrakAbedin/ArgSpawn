@@ -165,13 +165,13 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	ACC_NEWLINE;
 
 	// Initial check to match argument count
-	ACC_IF(fmt::format("m_Argc < {0} || m_Argc > {1}", VAR_TARGET_COUNT_NAME, VAR_MAX_ARG_NAME));
+	ACC_IF(fmt::format("m_Argc < {0} || m_Argc > {1}", VAR_TARGET_COUNT_NAME + 1, VAR_MAX_ARG_NAME + 1));
 	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
 	ACC_IF_END;
 	ACC_NEWLINE;
 
 	// Main loop through each of the arguments
-	ACC_FOR("int i = 0", "i < m_Argc", "i++");
+	ACC_FOR("int i = 1", "i < m_Argc", "i++");
 	ACC_DECDEFINE_VAR("auto", VAR_EACH_ARG_NAME, "m_Argv[i]");
 	ACC_NEWLINE;
 
