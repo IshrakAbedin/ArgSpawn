@@ -6,8 +6,8 @@
 
 constexpr auto RETURN_STRUCT_TNAME = "Arguments";
 constexpr auto STATE_ENUMCLASS_TNAME = "States";
-constexpr auto RETURN_STRUCT_NAME = "arguments";
-constexpr auto STATE_ENUMCLASS_NAME = "states";
+constexpr auto RETURN_STRUCT_VAR_NAME = "arguments";
+constexpr auto STATE_ENUMCLASS_VAR_NAME = "state";
 constexpr auto PARSING_FUNC_NAME = "ParseArguments";
 constexpr auto HELPTEXT_FUNC_NAME = "PrintHelpTextAndExit";
 constexpr auto STATE_ENUM_DEFAULT = "Default";
@@ -87,8 +87,8 @@ std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 	ACC_NEWLINE;
 
 	// Add the other necessary variables
-	ACC_DECLARE_VAR(STATE_ENUMCLASS_TNAME, STATE_ENUMCLASS_NAME);
-	ACC_DECLARE_VAR(RETURN_STRUCT_TNAME, RETURN_STRUCT_NAME);
+	ACC_DECLARE_VAR(STATE_ENUMCLASS_TNAME, STATE_ENUMCLASS_VAR_NAME);
+	ACC_DECLARE_VAR(RETURN_STRUCT_TNAME, RETURN_STRUCT_VAR_NAME);
 	ACC_DECLARE_VAR("int", "m_Argc"); // Argument count
 	ACC_DECLARE_VAR("char**", "m_Argv"); // Argument values
 	ACC_NEWLINE;
@@ -133,19 +133,19 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 
 	/*-------------------------- PARAMETERIZED CONSTRUCTOR BEGINS --------------------------*/
 	ACC_DEFINE_PARAMCTOR(irep.GetClassName(), "int argc, char** argv");
-	ACCPB_FMT("{0} = {1}::{2};", STATE_ENUMCLASS_NAME, STATE_ENUMCLASS_TNAME, STATE_ENUM_DEFAULT); // Set state to default
+	ACCPB_FMT("{0} = {1}::{2};", STATE_ENUMCLASS_VAR_NAME, STATE_ENUMCLASS_TNAME, STATE_ENUM_DEFAULT); // Set state to default
 	if (!irep.GetOptionalArgumentsRef().empty()) // Initialize optional variable defaults
 	{
 		for (auto& arg : irep.GetOptionalArgumentsRef())
 		{
-			ACCPB_FMT("{0}.{1} = {2};", RETURN_STRUCT_NAME, arg.GetName(), arg.GetDefaultValue());
+			ACCPB_FMT("{0}.{1} = {2};", RETURN_STRUCT_VAR_NAME, arg.GetName(), arg.GetDefaultValue());
 		}
 	}
 	if (!irep.GetFlagsRef().empty()) // Initialize flags as false
 	{
 		for (auto& arg : irep.GetFlagsRef())
 		{
-			ACCPB_FMT("{0}.{1} = {2};", RETURN_STRUCT_NAME, arg.GetName(), "false");
+			ACCPB_FMT("{0}.{1} = {2};", RETURN_STRUCT_VAR_NAME, arg.GetName(), "false");
 		}
 	}
 	ACCPB("m_Argc = argc;"); // Set argc value
@@ -192,7 +192,7 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		{
 			ACC_CASE(UTIL_FUNC_CALL(UTILFUNC_STRING_HASH_NAME, UTIL_STR(symbol)));
 		}
-		ACC_DEFINE_VAR(STATE_ENUMCLASS_NAME, UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, arg.GetName()));
+		ACC_DEFINE_VAR(STATE_ENUMCLASS_VAR_NAME, UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, arg.GetName()));
 		ACC_BREAK;
 	}
 	for (auto& arg : irep.GetFlagsRef())
@@ -201,12 +201,12 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		{
 			ACC_CASE(UTIL_FUNC_CALL(UTILFUNC_STRING_HASH_NAME, UTIL_STR(symbol)));
 		}
-		ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()), "true");
+		ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_VAR_NAME, arg.GetName()), "true");
 		ACC_BREAK;
 	}
 	ACC_CASE_DEFAULT;
 	/* Level 1 Indent Switch Starts */
-	ACC_SWITCH(STATE_ENUMCLASS_NAME);
+	ACC_SWITCH(STATE_ENUMCLASS_VAR_NAME);
 	
 	ACC_CASE(UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, STATE_ENUM_DEFAULT));
 	/* Level 2 Indent Switch Starts */
@@ -218,12 +218,12 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		ACC_CASE(counter);
 		if (arg.GetConversion() != "")
 		{
-			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()),
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_VAR_NAME, arg.GetName()),
 				UTIL_FUNC_CALL(arg.GetConversion(), VAR_EACH_ARG_NAME));
 		}
 		else
 		{
-			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()), VAR_EACH_ARG_NAME);
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_VAR_NAME, arg.GetName()), VAR_EACH_ARG_NAME);
 		}
 		ACC_BREAK;
 		counter++;
@@ -244,13 +244,14 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		ACC_CASE(UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, arg.GetName()));
 		if (arg.GetConversion() != "")
 		{
-			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()),
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_VAR_NAME, arg.GetName()),
 				UTIL_FUNC_CALL(arg.GetConversion(), VAR_EACH_ARG_NAME));
 		}
 		else
 		{
-			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_NAME, arg.GetName()), VAR_EACH_ARG_NAME);
+			ACC_DEFINE_VAR(UTIL_OBJECT_MEMBER(RETURN_STRUCT_VAR_NAME, arg.GetName()), VAR_EACH_ARG_NAME);
 		}
+		ACC_DEFINE_VAR(STATE_ENUMCLASS_VAR_NAME, UTIL_STATIC_MEMBER(STATE_ENUMCLASS_TNAME, STATE_ENUM_DEFAULT));
 		ACC_BREAK;
 	}
 	ACC_CASE_DEFAULT;
@@ -272,7 +273,7 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
 	ACC_IF_END;
 	ACC_NEWLINE;
-	ACC_RETURN(RETURN_STRUCT_NAME);
+	ACC_RETURN(RETURN_STRUCT_VAR_NAME);
 
 	ACC_FUNC_END;
 	/*-------------------------- PARSE ARGUMENT FUNCTION ENDS --------------------------*/
