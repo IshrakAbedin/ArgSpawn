@@ -7,7 +7,7 @@ Positional Arguments:
   - Name: FilePath
     Description: Path to file
     Type: std::string
-    # Conversion: '' # Not required
+    # Conversion: '' # Optional
   - Name: Multiplier
     Description: Integer multiplier
     Type: int
@@ -28,6 +28,4 @@ Optional Arguments:
 Flags:
   - Name: IsUniform
     Description: Force the output to be uniform
-    # Type: bool
-    # Conversion: (bool)std::stoi
     Symbols: [-u, --uniform]

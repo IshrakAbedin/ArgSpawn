@@ -116,8 +116,6 @@ Optional Arguments:
 Flags:
   - Name: IsUniform
     Description: Force the output to be uniform
-    # Type: bool
-    # Conversion: (bool)std::stoi
     Symbols: [-u, --uniform]
 ```
 ---
