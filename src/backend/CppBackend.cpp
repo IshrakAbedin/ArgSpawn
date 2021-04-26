@@ -19,8 +19,8 @@ constexpr auto HELP_TEXT_MSG = "Print help message and exit";
 constexpr auto POSITIONAL_ARG_OVERFLOW_MSG = "[!ERROR] Provided more positional arguments than allowed";
 constexpr auto POSITIONAL_ARG_UNDERFLOW_MSG = "[!ERROR] Provided less positional arguments than required";
 
-constexpr auto UTILFUNC_STRING_HASH_NAME = "StringToInt";
-constexpr auto UTILFUNC_STRING_HASH = "static constexpr unsigned int StringToInt(const char* str, int h = 0)\n"
+constexpr auto UTILFUNC_STRING_HASH_NAME = "Djb2";
+constexpr auto UTILFUNC_STRING_HASH = "static constexpr unsigned int Djb2(const char* str, int h = 0)\n"
 	"{\n return !str[h] ? 5381 : (StringToInt(str, h + 1) * 33) ^ str[h];\n}";
 
 const std::vector<std::string> VEC_HELP_SYMBOLS = { "-h", "--help" };
