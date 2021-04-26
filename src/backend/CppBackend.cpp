@@ -21,7 +21,7 @@ constexpr auto POSITIONAL_ARG_UNDERFLOW_MSG = "[!ERROR] Provided less positional
 
 constexpr auto UTILFUNC_STRING_HASH_NAME = "Djb2";
 constexpr auto UTILFUNC_STRING_HASH = "static constexpr unsigned int Djb2(const char* str, int h = 0)\n"
-	"{\n return !str[h] ? 5381 : (StringToInt(str, h + 1) * 33) ^ str[h];\n}";
+	"{\n return !str[h] ? 5381 : (Djb2(str, h + 1) * 33) ^ str[h];\n}";
 
 const std::vector<std::string> VEC_HELP_SYMBOLS = { "-h", "--help" };
 
