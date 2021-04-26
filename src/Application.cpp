@@ -1,19 +1,40 @@
-#include "fmt/ranges.h"
 #include <iostream>
+#include <filesystem>
+#include <fstream>
+#include "fmt/ranges.h"
 
 #include "frontend/YamlFrontend.h"
 #include "backend/CppBackend.h"
+#include "argumentparser/ArgParser.h"
 
+static void WriteFile(const std::string& path, const std::string& content) noexcept;
+static void PrintHeaderAndBody(const std::string className, const std::string& header, const std::string& body) noexcept;
+#ifdef DEBUG
 static void PrintIntermediateRepresentation(IntermediateRepresentation& irep);
+#endif // DEBUG
 
-int main()
+int main(int argc, char ** argv)
 {
 	try
 	{
-		IntermediateRepresentation irep{ YamlFrontendParser::ParseYamlFromFile("./yamls/Example1.yaml") };
+		auto parser = argspawn::ArgParser(argc, argv);
+		auto parsedArgs = parser.ParseArguments();
+		std::string yamlPath = std::filesystem::absolute(parsedArgs.YamlPath).string();
+
+		IntermediateRepresentation irep{ YamlFrontendParser::ParseYamlFromFile(yamlPath) };
 		auto [header, body] = CppGenerator::GenerateCppHeaderAndBody(irep);
-		std::cout << body; // fmt will cause parsing error with the curly braces
-		//PrintIntermediateRepresentation(irep);
+
+		std::string outHeaderPath = std::filesystem::absolute(parsedArgs.OutDir).
+			append(fmt::format("{0}.h", irep.GetClassName())).string();
+		std::string outBodyPath = std::filesystem::absolute(parsedArgs.OutDir).
+			append(fmt::format("{0}.cpp", irep.GetClassName())).string();
+		WriteFile(outHeaderPath, header);
+		WriteFile(outBodyPath, body);
+
+		if (parsedArgs.Verbose)
+		{
+			PrintHeaderAndBody(irep.GetClassName(), header, body);
+		}
 	}
 	catch (const YAML::Exception& e)
 	{
@@ -21,11 +42,34 @@ int main()
 	}
 	catch (const std::exception& e)
 	{
-		fmt::print("[Error] Failed to Parse\n[Error Msg] {0}\n", e.what());
+		fmt::print("[Error] Failed to Execute\n[Error Msg] {0}\n", e.what());
 	}
 	return 0;
 }
 
+static void WriteFile(const std::string& path, const std::string& content) noexcept
+{
+	try
+	{
+		auto outStream = std::ofstream(path);
+		outStream << content;
+		outStream.close();
+	}
+	catch (const std::exception& e)
+	{
+		fmt::print("[Error] Failed to write file in <{0}>\n[Error Msg] {1}\n", path , e.what());
+	}
+}
+
+static void PrintHeaderAndBody(const std::string className, const std::string& header, const std::string& body) noexcept
+{
+	fmt::print("// {0}.h\n###############\n\n", className);
+	std::cout << header << std::endl << std::endl;
+	fmt::print("// {0}.cpp\n###############\n\n", className);
+	std::cout << body << std::endl;
+}
+
+#ifdef DEBUG
 static void PrintIntermediateRepresentation(IntermediateRepresentation& irep)
 {
 	fmt::print("Program Description: {0}\n", irep.GetProgramDescription());
@@ -64,3 +108,4 @@ static void PrintIntermediateRepresentation(IntermediateRepresentation& irep)
 		fmt::print("  Symbols: {0}\n", fmt::join(fg.GetSymbols(), " or "));
 	}
 }
+#endif // DEBUG

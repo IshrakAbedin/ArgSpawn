@@ -18,6 +18,7 @@ constexpr auto VAR_EACH_ARG_NAME = "arg";
 constexpr auto HELP_TEXT_MSG = "Print help message and exit";
 constexpr auto POSITIONAL_ARG_OVERFLOW_MSG = "[!ERROR] Provided more positional arguments than allowed";
 constexpr auto POSITIONAL_ARG_UNDERFLOW_MSG = "[!ERROR] Provided less positional arguments than required";
+constexpr auto AUTO_GENERATION_MSG = "/* This file is auto generated using ArgSpawn */";
 
 constexpr auto UTILFUNC_STRING_HASH_NAME = "Djb2";
 constexpr auto UTILFUNC_STRING_HASH = "static constexpr unsigned int Djb2(const char* str, int h = 0)\n"
@@ -29,6 +30,9 @@ std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 {
 	std::vector<std::string> ACC_NAME;
 
+	ACCPB(AUTO_GENERATION_MSG); // Push auto generation comment
+	ACC_NEWLINE; // push newline
+
 	ACCPB(TMPLT_PRAGMA_0); // Push pragma once
 	ACC_NEWLINE; // Push newline
 
@@ -37,14 +41,14 @@ std::string CppGenerator::GenerateCppHeader(IntermediateRepresentation& irep)
 	{
 		ACC_AHEADER_INCLUDE(angleInclude);
 	}
-	ACC_NEWLINE;
+	if(!irep.GetAngleIncludesRef().empty()) ACC_NEWLINE;
 
 	// Push quote includes
 	for (auto& quoteInclude : irep.GetQuoteIncludesRef())
 	{
 		ACC_QHEADER_INCLUDE(quoteInclude);
 	}
-	ACC_NEWLINE;
+	if (!irep.GetQuoteIncludesRef().empty()) ACC_NEWLINE;
 
 	// Push namespace if it is named
 	if (irep.GetNamespaceName() != "") ACC_NAMESPACE_BEGIN(irep.GetNamespaceName());
@@ -115,13 +119,15 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	std::vector<std::string> ACC_NAME;
 	int counter;
 
+	ACCPB(AUTO_GENERATION_MSG); // Push auto generation comment
+	ACC_NEWLINE; // push newline
+
 	// Add class header inclusion
 	ACC_QHEADER_INCLUDE(fmt::format("{0}.h", irep.GetClassName()));
 	ACC_NEWLINE;
 	
-	// Add iostream for external library independent printing and string for string type
+	// Add iostream for external library independent printing
 	ACC_AHEADER_INCLUDE("iostream");
-	// ACC_AHEADER_INCLUDE("string");
 	ACC_NEWLINE;
 
 	// Push namespace if it is named
@@ -164,13 +170,13 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 		irep.GetOptionalArgumentsRef().size() + irep.GetFlagsRef().size());
 	ACC_NEWLINE;
 
-	// Initial check to match argument count
-	ACC_IF(fmt::format("m_Argc < {0} + 1", VAR_TARGET_COUNT_NAME));
-	ACC_COUTLN(POSITIONAL_ARG_UNDERFLOW_MSG);
-	ACC_COUT_NEWLINE;
-	ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
-	ACC_IF_END;
-	ACC_NEWLINE;
+	//// Initial check to match argument count
+	//ACC_IF(fmt::format("m_Argc < {0} + 1", VAR_TARGET_COUNT_NAME));
+	//ACC_COUTLN(POSITIONAL_ARG_UNDERFLOW_MSG);
+	//ACC_COUT_NEWLINE;
+	//ACC_FUNC_CALL(HELPTEXT_FUNC_NAME, "");
+	//ACC_IF_END;
+	//ACC_NEWLINE;
 
 	// Main loop through each of the arguments
 	ACC_FOR("int i = 1", "i < m_Argc", "i++");
@@ -296,8 +302,8 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 			auto desc = fmt::format("[{0}] : {1}", arg.GetName(), arg.GetDescription());
 			ACC_COUTLN(desc);
 		}
+		ACC_COUT_NEWLINE;
 	}
-	ACC_COUT_NEWLINE;
 	if (!irep.GetOptionalArgumentsRef().empty())
 	{
 		ACC_COUTLN("OPTIONAL ARGUMENTS\\n--------------------");
@@ -306,8 +312,8 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 			auto desc = fmt::format("[{0}] : {1}", fmt::join(arg.GetSymbols(), ", "), arg.GetDescription());
 			ACC_COUTLN(desc);
 		}
+		ACC_COUT_NEWLINE;
 	}
-	ACC_COUT_NEWLINE;
 	if (!irep.GetFlagsRef().empty())
 	{
 		ACC_COUTLN("Flags\\n-----");
@@ -316,8 +322,8 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 			auto desc = fmt::format("[{0}] : {1}", fmt::join(arg.GetSymbols(), ", "), arg.GetDescription());
 			ACC_COUTLN(desc);
 		}
+		ACC_COUT_NEWLINE;
 	}
-	ACC_COUT_NEWLINE;
 	ACC_EXIT(0);
 	ACC_FUNC_END;
 	/*-------------------------- HELP TEXT FUNCTION ENDS --------------------------*/

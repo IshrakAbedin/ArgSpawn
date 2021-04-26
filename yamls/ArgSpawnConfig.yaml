@@ -1,0 +1,21 @@
+Program Description: >-
+  ArgSpawn || A command line argument parser generator\n
+  ----------------------------------------------------\n
+  Mohammad Ishrak Abedin, 2021
+Angle Includes: [string]
+Namespace Name: argspawn
+Class Name: ArgParser
+Positional Arguments:
+  - Name: YamlPath
+    Description: Path to yaml config file
+    Type: std::string
+Optional Arguments:
+  - Name: OutDir
+    Description: Output directory for the generated files (default is execution directory)
+    Type: std::string
+    Symbols: [-d, --dir]
+    Default Value: '"./"'
+Flags:
+  - Name: Verbose
+    Description: Print the generated files in console
+    Symbols: [-v, --verbose]
