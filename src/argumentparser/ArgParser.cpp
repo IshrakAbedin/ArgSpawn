@@ -24,7 +24,6 @@ namespace argspawn
 	{
 		int parseCount = 0;
 		int targetCount = 1;
-		int maxArgCount = 3;
 
 		for (int i = 1; i < m_Argc; i++)
 		{

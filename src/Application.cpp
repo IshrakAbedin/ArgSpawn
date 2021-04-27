@@ -63,9 +63,9 @@ static void WriteFile(const std::string& path, const std::string& content) noexc
 
 static void PrintHeaderAndBody(const std::string className, const std::string& header, const std::string& body) noexcept
 {
-	fmt::print("// {0}.h\n###############\n\n", className);
+	fmt::print("// <==========| {0}.h |==========>\n\n", className);
 	std::cout << header << std::endl << std::endl;
-	fmt::print("// {0}.cpp\n###############\n\n", className);
+	fmt::print("// <==========| {0}.cpp |==========>\n\n", className);
 	std::cout << body << std::endl;
 }
 
@@ -104,7 +104,6 @@ static void PrintIntermediateRepresentation(IntermediateRepresentation& irep)
 		fmt::print("- Name: {0}\n", fg.GetName());
 		fmt::print("  Description: {0}\n", fg.GetDescription());
 		fmt::print("  Type: {0}\n", fg.GetType());
-		fmt::print("  Conversion: {0}\n", fg.GetConversion());
 		fmt::print("  Symbols: {0}\n", fmt::join(fg.GetSymbols(), " or "));
 	}
 }

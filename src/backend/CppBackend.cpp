@@ -13,7 +13,7 @@ constexpr auto HELPTEXT_FUNC_NAME = "PrintHelpTextAndExit";
 constexpr auto STATE_ENUM_DEFAULT = "Default";
 constexpr auto VAR_PARSE_COUNT_NAME = "parseCount";
 constexpr auto VAR_TARGET_COUNT_NAME = "targetCount";
-constexpr auto VAR_MAX_ARG_NAME = "maxArgCount";
+//constexpr auto VAR_MAX_ARG_NAME = "maxArgCount";
 constexpr auto VAR_EACH_ARG_NAME = "arg";
 constexpr auto HELP_TEXT_MSG = "Print help message and exit";
 constexpr auto POSITIONAL_ARG_OVERFLOW_MSG = "[!ERROR] Provided more positional arguments than allowed";
@@ -166,8 +166,7 @@ std::string CppGenerator::GenerateCppBody(IntermediateRepresentation& irep)
 	// Control variables for argument counting
 	ACC_DECDEFINE_VAR("int", VAR_PARSE_COUNT_NAME, 0);
 	ACC_DECDEFINE_VAR("int", VAR_TARGET_COUNT_NAME, irep.GetPositionalArgumentsRef().size());
-	ACC_DECDEFINE_VAR("int", VAR_MAX_ARG_NAME, irep.GetPositionalArgumentsRef().size() +
-		irep.GetOptionalArgumentsRef().size() + irep.GetFlagsRef().size());
+	//ACC_DECDEFINE_VAR("int", VAR_MAX_ARG_NAME, irep.GetPositionalArgumentsRef().size() + irep.GetOptionalArgumentsRef().size() + irep.GetFlagsRef().size());
 	ACC_NEWLINE;
 
 	//// Initial check to match argument count
