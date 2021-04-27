@@ -1,7 +1,7 @@
 #include "IntermediateRepresentation.h"
 
 IntermediateRepresentation::IntermediateRepresentation()
-	: IntermediateRepresentation("Program", {}, {}, "", "ArgParser", {}, {}, {})
+	: m_ProgramDescription("Program"), m_NamespaceName(""), m_ClassName("ArgParser")
 {
 }
 

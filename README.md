@@ -1,7 +1,7 @@
 <!-- Written by Mohammad Ishrak Abedin-->
 # ArgSpawn
 ---
-### A commandline argument parser generator written in C++.
+### A commandline argument parser generator written in C++, for C++.
 ---
 ### The project relies on **[PREMAKE](https://premake.github.io/)** meta build system and can be compiled in Windows or Linux using preferred build system (Expected to use MSVC for Windows and GCC for Linux).
 
@@ -121,7 +121,7 @@ Flags:
 ---
 ## Integration
 ---
-Calling ArgSpawn with the yaml config file will generate `<Class Name>.h` and `<Class Name>.cpp` files. Integrate these files with your project. Arguments can be then easily be parsed and accessed in the following manner.
+Calling ArgSpawn with the yaml config file will generate `<Class Name>.h` and `<Class Name>.cpp` files. Integrate these files with your project. Arguments can then easily be parsed and accessed in the following manner.
 
 ```C++
 auto parser = argspawn::ArgParser(argc, argv);
