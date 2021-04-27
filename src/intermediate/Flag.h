@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "PositionalArgument.h"
+#include "Argument.h"
 
-class Flag : public PositionalArgument
+class Flag : public Argument
 {
 private:
 	std::vector<std::string> m_Symbols;
@@ -12,7 +12,7 @@ private:
 public:
 	Flag();
 	Flag(const std::string name, const std::string description, 
-		const std::string type, const std::string conversion, const std::vector<std::string> symbols);
+		const std::string type, const std::vector<std::string> symbols);
 	~Flag();
 	Flag(const Flag& other);
 	Flag(Flag&& other) noexcept;

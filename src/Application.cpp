@@ -104,7 +104,6 @@ static void PrintIntermediateRepresentation(IntermediateRepresentation& irep)
 		fmt::print("- Name: {0}\n", fg.GetName());
 		fmt::print("  Description: {0}\n", fg.GetDescription());
 		fmt::print("  Type: {0}\n", fg.GetType());
-		fmt::print("  Conversion: {0}\n", fg.GetConversion());
 		fmt::print("  Symbols: {0}\n", fmt::join(fg.GetSymbols(), " or "));
 	}
 }

@@ -91,7 +91,6 @@ namespace YAML {
             node[TAG_ARGNAME] = rhs.GetName();
             node[TAG_ARGDESC] = rhs.GetDescription();
             node[TAG_ARGTYPE] = rhs.GetType();
-            node[TAG_ARGCONV] = rhs.GetConversion();
             node[TAG_ARGSYMBS] = rhs.GetSymbols();
             return node;
         }
@@ -103,8 +102,7 @@ namespace YAML {
 
             rhs.SetName(node[TAG_ARGNAME].as<std::string>());
             rhs.SetDescription(node[TAG_ARGDESC].as<std::string>());
-            rhs.SetType(node[TAG_ARGTYPE] ? node[TAG_ARGTYPE].as<std::string>() : "bool");
-            rhs.SetConversion(node[TAG_ARGCONV] ? node[TAG_ARGCONV].as<std::string>() : "(bool)std::stoi");
+            rhs.SetType("bool");
             rhs.SetSymbols(node[TAG_ARGSYMBS].as<std::vector<std::string>>());
 
             return true;
