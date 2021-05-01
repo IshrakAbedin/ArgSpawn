@@ -1,8 +1,8 @@
-/* This file is auto generated using ArgSpawn */
+/* This file is auto generated using ArgSpawn, then modified to switch iostream to fmt */
 
 #include "ArgParser.h"
 
-#include <iostream>
+#include "fmt/core.h"
 
 namespace argspawn
 {
@@ -53,8 +53,8 @@ namespace argspawn
 						arguments.YamlPath = arg;
 						break;
 					default:
-						std::cout << "[!ERROR] Provided more positional arguments than allowed" << std::endl;
-						std::cout << std::endl;
+						fmt::print("[!ERROR] Provided more positional arguments than allowed\n");
+						fmt::print("\n");
 						PrintHelpTextAndExit();
 						break;
 					}
@@ -73,8 +73,8 @@ namespace argspawn
 		}
 		if (parseCount != targetCount)
 		{
-			std::cout << "[!ERROR] Provided less positional arguments than required" << std::endl;
-			std::cout << std::endl;
+			fmt::print("[!ERROR] Provided less positional arguments than required\n");
+			fmt::print("\n");
 			PrintHelpTextAndExit();
 		}
 
@@ -83,19 +83,19 @@ namespace argspawn
 
 	void ArgParser::PrintHelpTextAndExit() const
 	{
-		std::cout << "ArgSpawn || A command line argument parser generator\n----------------------------------------------------\nMohammad Ishrak Abedin, 2021" << std::endl;
-		std::cout << std::endl;
-		std::cout << "[-h, --help] : Print help message and exit" << std::endl;
-		std::cout << std::endl;
-		std::cout << "POSITIONAL ARGUMENTS\n--------------------" << std::endl;
-		std::cout << "[YamlPath] : Path to yaml config file" << std::endl;
-		std::cout << std::endl;
-		std::cout << "OPTIONAL ARGUMENTS\n--------------------" << std::endl;
-		std::cout << "[-d, --dir] : Output directory for the generated files (default is execution directory)" << std::endl;
-		std::cout << std::endl;
-		std::cout << "Flags\n-----" << std::endl;
-		std::cout << "[-v, --verbose] : Print the generated files in console" << std::endl;
-		std::cout << std::endl;
+		fmt::print("ArgSpawn || A command line argument parser generator\n----------------------------------------------------\nMohammad Ishrak Abedin, 2021\n");
+		fmt::print("\n");
+		fmt::print("[-h, --help] : Print help message and exit\n");
+		fmt::print("\n");
+		fmt::print("POSITIONAL ARGUMENTS\n--------------------\n");
+		fmt::print("[YamlPath] : Path to yaml config file\n");
+		fmt::print("\n");
+		fmt::print("OPTIONAL ARGUMENTS\n--------------------\n");
+		fmt::print("[-d, --dir] : Output directory for the generated files (default is execution directory)\n");
+		fmt::print("\n");
+		fmt::print("Flags\n-----\n");
+		fmt::print("[-v, --verbose] : Print the generated files in console\n");
+		fmt::print("\n");
 		exit(0);
 	}
 }

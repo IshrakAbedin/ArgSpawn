@@ -1,4 +1,3 @@
-#include <iostream>
 #include <filesystem>
 #include <fstream>
 #include "fmt/ranges.h"
@@ -38,11 +37,11 @@ int main(int argc, char ** argv)
 	}
 	catch (const YAML::Exception& e)
 	{
-		fmt::print("[Error] Failed to Parse\n[Error Msg] {0}\n", e.msg);
+		fmt::print("[!ERROR] Failed to Parse\n[!ERROR MSG] {0}\n", e.msg);
 	}
 	catch (const std::exception& e)
 	{
-		fmt::print("[Error] Failed to Execute\n[Error Msg] {0}\n", e.what());
+		fmt::print("[!ERROR] Failed to Execute\n[!ERROR MSG] {0}\n", e.what());
 	}
 	return 0;
 }
@@ -57,16 +56,16 @@ static void WriteFile(const std::string& path, const std::string& content) noexc
 	}
 	catch (const std::exception& e)
 	{
-		fmt::print("[Error] Failed to write file in <{0}>\n[Error Msg] {1}\n", path , e.what());
+		fmt::print("[!ERROR] Failed to write file in <{0}>\n[!ERROR MSG] {1}\n", path , e.what());
 	}
 }
 
 static void PrintHeaderAndBody(const std::string className, const std::string& header, const std::string& body) noexcept
 {
 	fmt::print("// <==========| {0}.h |==========>\n\n", className);
-	std::cout << header << std::endl << std::endl;
+	fmt::print("{0}\n\n", header);
 	fmt::print("// <==========| {0}.cpp |==========>\n\n", className);
-	std::cout << body << std::endl;
+	fmt::print("{0}\n", body);
 }
 
 #ifdef DEBUG
