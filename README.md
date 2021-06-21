@@ -66,7 +66,7 @@ After building, the executable is located in `bin/Release/` or `bin/Debug/` base
 
 *Example:*
 ```powershell
-./ArgSpawn.exe -v ./yaml/ArgSpawnConfig.yaml --dir ./out/ 
+./ArgSpawn.exe -v ./yamls/ArgSpawnConfig.yaml --dir ./out/ 
 ```
 
 ### Optional arguments
