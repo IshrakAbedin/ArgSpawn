@@ -32,7 +32,7 @@
 
 Run the following commands in step to generate project files and build the project.
 ```powershell
-.\makedirs.ps1 # Generates output directories
+.\makedir.ps1 # Generates output directories
 
 .\premake\premake5.exe vs2019 # Pass respective Visual Studio version
 ```
@@ -48,7 +48,7 @@ Run the following commands in step to generate project files and build the proje
 Run the following commands in step to generate project files and build the project.
 ```bash
 #-- Project Generation --
-sh ./makedirs.sh # Generates output directories
+sh ./makedir.sh # Generates output directories
 
 premake5 gmake2 # Generates Makefile
 
